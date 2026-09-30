@@ -38,7 +38,7 @@ async function runSync() {
   });
 
   const db = initializeFirestore(app, {
-    experimentalAutoDetectLongPolling: true,
+    experimentalForceLongPolling: true,
   }, firebaseConfig.firestoreDatabaseId);
 
   // Load Seed Posts

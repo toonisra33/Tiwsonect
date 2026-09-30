@@ -7,11 +7,12 @@ import firebaseConfig from "./firebase-applet-config.json";
 // Initialize Firebase App
 export const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with specific database ID and autoDetectLongPolling to prevent iframe connection issues
+// Initialize Firestore with specific database ID and forced long polling
+// to prevent streaming/WebChannel connection timeouts in sandboxed browser environments
 export const db = initializeFirestore(
   app, 
   {
-    experimentalAutoDetectLongPolling: true,
+    experimentalForceLongPolling: true,
   }, 
   firebaseConfig.firestoreDatabaseId
 );
@@ -70,14 +71,21 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   throw new Error(JSON.stringify(errInfo));
 }
 
-// Test Connection with safety
+// Test Connection with safety and graceful offline handling
 export async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
     console.log("Connected to Cloud Firestore successfully!");
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.warn("Cloud Firestore client is currently operating in offline cache mode.");
+    if (error instanceof Error) {
+      if (
+        error.message.includes('the client is offline') || 
+        error.message.includes("didn't respond within") ||
+        (error as any).code === 'unavailable'
+      ) {
+        console.warn("Cloud Firestore client is currently operating in offline cache mode.");
+        return;
+      }
     }
   }
 }
