@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "avatar": { "type": "string", "maxLength": 1000 },
+        "email": { "type": "string", "maxLength": 200 },
+        "bio": { "type": "string", "maxLength": 500 },
+        "coverPhoto": { "type": "string", "maxLength": 1000 },
+        "isOnline": { "type": "boolean" },
+        "hasStory": { "type": "boolean" }
+      },
+      "required": ["id", "name", "avatar"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Feed post with media, mood, location and interactions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "content": { "type": "string", "maxLength": 3000 },
+        "image": { "type": "string", "maxLength": 2000 },
+        "images": { "type": "array" },
+        "video": { "type": "string", "maxLength": 2000 },
+        "likes": { "type": "array" },
+        "savedBy": { "type": "array" },
+        "comments": { "type": "array" },
+        "timestamp": { "type": "number" },
+        "type": { "type": "string", "enum": ["image", "video", "short_video", "text"] },
+        "mood": { "type": "string", "maxLength": 100 },
+        "locationName": { "type": "string", "maxLength": 200 },
+        "isBroadcast": { "type": "boolean" },
+        "broadcastExpiresAt": { "type": "number" }
+      },
+      "required": ["userId", "content", "timestamp", "type"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Direct message between two users",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "receiverId": { "type": "string", "maxLength": 128 },
+        "text": { "type": "string", "maxLength": 2000 },
+        "timestamp": { "type": "number" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["senderId", "receiverId", "text", "timestamp"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "In-app interaction notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "enum": ["like", "comment", "follow", "live"] },
+        "postId": { "type": "string", "maxLength": 128 },
+        "text": { "type": "string", "maxLength": 500 },
+        "timestamp": { "type": "number" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["userId", "type", "timestamp", "isRead"]
+    },
+    "LiveSession": {
+      "title": "LiveSession",
+      "description": "Active or historical livestream session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "viewerCount": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "startedAt": { "type": "number" }
+      },
+      "required": ["userId", "title", "isActive", "startedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Public user profile and settings"
+    },
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Social media timeline posts"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Direct chat messages between users"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User notifications"
+    },
+    "/liveSessions/{sessionId}": {
+      "schema": "LiveSession",
+      "description": "Active and scheduled live broadcasts"
+    }
+  }
+}

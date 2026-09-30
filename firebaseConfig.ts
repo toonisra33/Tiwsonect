@@ -1,59 +1,85 @@
-
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { initializeFirestore, doc, getDocFromServer } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import firebaseConfig from "./firebase-applet-config.json";
 
-// =================================================================
-// ⚠️ ขั้นตอนการตั้งค่า FIREBASE (สำคัญมาก) ⚠️
-// 1. ไปที่ https://console.firebase.google.com/
-// 2. สร้าง Project ใหม่ และกดเมนู "Project Settings" (รูปเฟือง)
-// 3. เลื่อนลงมาล่างสุด เลือกไอคอน </> (Web) เพื่อสร้างแอป
-// 4. คัดลอกค่า config ที่ได้ มาแทนที่ค่าด้านล่างนี้ทั้งหมด
-// =================================================================
+// Initialize Firebase App
+export const app = initializeApp(firebaseConfig);
 
-const firebaseConfig = {
-  // นำค่า apiKey จาก Firebase Console มาใส่แทนที่ข้อความในเครื่องหมายคำพูด
-  apiKey: "YOUR_API_KEY_HERE", 
-  
-  // นำค่า authDomain มาใส่
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com", 
-  
-  // นำค่า projectId มาใส่
-  projectId: "YOUR_PROJECT_ID", 
-  
-  // นำค่า storageBucket มาใส่
-  storageBucket: "YOUR_PROJECT_ID.appspot.com", 
-  
-  // นำค่า messagingSenderId มาใส่
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", 
-  
-  // นำค่า appId มาใส่
-  appId: "YOUR_APP_ID" 
-};
+// Initialize Firestore with specific database ID and autoDetectLongPolling to prevent iframe connection issues
+export const db = initializeFirestore(
+  app, 
+  {
+    experimentalAutoDetectLongPolling: true,
+  }, 
+  firebaseConfig.firestoreDatabaseId
+);
 
-// ตรวจสอบว่าใส่ค่าหรือยัง เพื่อป้องกันหน้าขาว
-const isConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY_HERE";
+// Initialize Auth
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
-if (!isConfigured) {
-  console.warn(
-    "%c⚠️ ยังไม่ได้เชื่อมต่อ Firebase ⚠️", 
-    "color: red; font-size: 16px; font-weight: bold;"
-  );
-  console.log("กรุณาเปิดไฟล์ firebaseConfig.ts แล้วนำค่า API Key จาก Firebase Console มาใส่");
+// Initialize Storage
+export const storage = getStorage(app);
+
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
 }
 
-// Initialize Firebase only if configured (or with dummy so it doesn't immediately crash if possible)
-// But wait, getAuth requires an initialized app.
-// To avoid breaking imports, we can initialize with dummy values if we want, but it's better to just use dummy format
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (e) {
-  console.error("Firebase init failed:", e);
+export interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  };
 }
 
-// Export services safely
-export const auth = app ? getAuth(app) : null as any;
-export const db = app ? getFirestore(app) : null as any;
-export const storage = app ? getStorage(app) : null as any;
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): never {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth?.currentUser?.uid,
+      email: auth?.currentUser?.email,
+      emailVerified: auth?.currentUser?.emailVerified,
+      isAnonymous: auth?.currentUser?.isAnonymous,
+      tenantId: auth?.currentUser?.tenantId,
+      providerInfo: auth?.currentUser?.providerData?.map(provider => ({
+        providerId: provider.providerId,
+        email: provider.email,
+      })) || []
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error:', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
+// Test Connection with safety
+export async function testConnection() {
+  try {
+    await getDocFromServer(doc(db, 'test', 'connection'));
+    console.log("Connected to Cloud Firestore successfully!");
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('the client is offline')) {
+      console.warn("Cloud Firestore client is currently operating in offline cache mode.");
+    }
+  }
+}
+
+testConnection();
