@@ -1,0 +1,10 @@
+{
+  "name": "TiWsonect",
+  "description": "โซเชียลมีเดียแพลตฟอร์มสำหรับแบ่งปันเรื่องราว รูปภาพ วิดีโอ และค้นหาเพื่อนที่อยู่ใกล้เคียง พร้อมระบบแชทเรียลไทม์และผู้ช่วย AI",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
