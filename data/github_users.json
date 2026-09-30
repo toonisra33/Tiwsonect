@@ -1,0 +1,28 @@
+[
+  {
+    "id": "gh-bot",
+    "name": "GitHub Bot (TiWsonect Sync)",
+    "email": "bot@github.local",
+    "avatar": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+    "bio": "บอทเชื่อมต่อและซิงค์ข้อมูลอัตโนมัติจาก GitHub สู่ Cloud Firestore",
+    "isOnline": true,
+    "stats": {
+      "posts": 5,
+      "followers": 128,
+      "following": 1
+    }
+  },
+  {
+    "id": "gh-toonisra",
+    "name": "Toonisra (Admin)",
+    "email": "toonisra33@gmail.com",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=toonisra",
+    "bio": "Lead Creator & Admin of TiWsonect",
+    "isOnline": true,
+    "stats": {
+      "posts": 12,
+      "followers": 450,
+      "following": 30
+    }
+  }
+]

@@ -1,0 +1,39 @@
+name: Sync GitHub Data to Cloud Firestore
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/**'
+      - 'firestore.rules'
+  workflow_dispatch:
+    inputs:
+      data_file:
+        description: 'Path to data file to sync (default: data/github_posts.json)'
+        required: false
+        default: 'data/github_posts.json'
+
+jobs:
+  sync_to_firestore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run GitHub to Firestore Sync Script
+        env:
+          FIREBASE_CONFIG_PATH: './firebase-applet-config.json'
+          SYNC_DATA_FILE: ${{ github.event.inputs.data_file || 'data/github_posts.json' }}
+        run: |
+          echo "Starting GitHub to Firestore synchronization..."
+          node scripts/sync-github-to-firestore.mjs

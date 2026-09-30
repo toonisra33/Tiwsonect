@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gh-post-1",
+    "content": "🚀 เปิดตัวระบบ TiWsonect เวอร์ชันใหม่! ซิงค์ข้อมูลจาก GitHub Repository ขึ้นสู่ Cloud Firestore สำเร็จแบบ Real-time พร้อมระบบ AI อัจฉริยะ 🤖✨",
+    "images": [
+      "https://images.unsplash.com/photo-1618401471353-b98aedd04e11?q=80&w=2000&auto=format&fit=crop"
+    ],
+    "type": "image",
+    "mood": "ตื่นเต้น 🚀",
+    "locationName": "GitHub / Cloud Firestore",
+    "tags": ["github", "firestore", "release", "tiwsonect"]
+  },
+  {
+    "id": "gh-post-2",
+    "content": "💡 เทคนิคการเชื่อมต่อ GitHub CI/CD กับ Cloud Firestore เพื่ออัปเดตกฎความปลอดภัย Security Rules และข้อมูลเริ่มต้น (Seed Data) โดยอัตโนมัติทุกครั้งที่ git push 💻🔥",
+    "images": [
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2000&auto=format&fit=crop"
+    ],
+    "type": "image",
+    "mood": "มีสาระ 💡",
+    "locationName": "Developer Hub",
+    "tags": ["cicd", "devops", "firebase"]
+  },
+  {
+    "id": "gh-post-3",
+    "content": "🌟 สวัสดีชุมชน TiWsonect! โพสต์นี้ถูกดึงข้อมูลตรงมาจากไฟล์ข้อมูลบน GitHub และส่งขึ้นมาแสดงผลบนฟีดของ Cloud Firestore ทันทีครับ!",
+    "images": [
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2000&auto=format&fit=crop"
+    ],
+    "type": "image",
+    "mood": "ยินดีที่ได้รู้จัก 👋",
+    "locationName": "Bangkok, Thailand",
+    "tags": ["community", "welcome"]
+  },
+  {
+    "id": "gh-post-4",
+    "content": "🎬 Short Clip: รีวิวการพัฒนาฟีเจอร์ Social Feed เรียลไทม์ พร้อมระบบ AI ช่วยแต่งแคปชั่นภาษาไทยอัตโนมัติ! ดูคลิปแล้วลองทดสอบได้เลยครับ",
+    "images": [],
+    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-42845-large.mp4",
+    "type": "video",
+    "mood": "สนุกสนาน 🎬",
+    "locationName": "Tech Studio",
+    "tags": ["shortclip", "ai", "coding"]
+  },
+  {
+    "id": "gh-post-5",
+    "content": "☕ Coffee & Code: เริ่มต้นเช้าวันใหม่ด้วยการเช็ค Pull Request บน GitHub และดูข้อมูลสถิติผู้ใช้งานที่บันทึกลงใน Firestore",
+    "images": [
+      "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=2000&auto=format&fit=crop"
+    ],
+    "type": "image",
+    "mood": "สดชื่น ☕",
+    "locationName": "Ari, Bangkok",
+    "tags": ["coffee", "lifestyle"]
+  }
+]

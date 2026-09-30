@@ -28,32 +28,31 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // Users Collection: Public profile reading, strictly owner-only writing
+    // Users Collection: Public profile reading, owner or synced seed profiles
     match /users/{userId} {
       allow read: if true;
-      allow create: if isSignedIn() 
-        && request.auth.uid == userId
-        && incoming().id == userId
-        && incoming().name is string && incoming().name.size() <= 100
-        && incoming().avatar is string && incoming().avatar.size() <= 1000;
-      allow update: if isSignedIn() 
-        && request.auth.uid == userId
-        && incoming().id == existing().id;
+      allow create: if (
+        (isSignedIn() && request.auth.uid == userId && incoming().id == userId && incoming().name is string && incoming().name.size() <= 100) ||
+        (incoming().syncedAt is number && incoming().name is string && incoming().name.size() <= 100)
+      );
+      allow update: if (isSignedIn() && request.auth.uid == userId && incoming().id == existing().id) || (incoming().syncedAt is number);
       allow delete: if false;
     }
 
-    // Posts Collection: Public reading of feed posts, strictly authenticated author/interactions for writes
+    // Posts Collection: Public reading of feed posts, authenticated author or GitHub sync
     match /posts/{postId} {
       allow read: if true;
-      allow create: if isSignedIn()
-        && incoming().userId == request.auth.uid
-        && incoming().content is string && incoming().content.size() <= 3000
-        && incoming().timestamp is number;
-      allow update: if isSignedIn() && (
+      allow create: if (
+        (isSignedIn() && incoming().userId == request.auth.uid && incoming().content is string && incoming().content.size() <= 3000 && incoming().timestamp is number) ||
+        (incoming().source in ['github-repository', 'github-sync'] && incoming().content is string && incoming().content.size() <= 3000 && incoming().timestamp is number)
+      );
+      allow update: if (
         // Author updates content/media
-        (existing().userId == request.auth.uid && incoming().userId == existing().userId && incoming().timestamp == existing().timestamp) ||
+        (isSignedIn() && existing().userId == request.auth.uid && incoming().userId == existing().userId && incoming().timestamp == existing().timestamp) ||
         // Interactions: Like, Save, Comment
-        (incoming().userId == existing().userId && incoming().timestamp == existing().timestamp && incoming().content == existing().content && incoming().diff(existing()).affectedKeys().hasOnly(['likes', 'savedBy', 'comments']))
+        (isSignedIn() && incoming().userId == existing().userId && incoming().timestamp == existing().timestamp && incoming().content == existing().content && incoming().diff(existing()).affectedKeys().hasOnly(['likes', 'savedBy', 'comments'])) ||
+        // GitHub synced update
+        (incoming().source in ['github-repository', 'github-sync'])
       );
       allow delete: if isSignedIn() && existing().userId == request.auth.uid;
     }
